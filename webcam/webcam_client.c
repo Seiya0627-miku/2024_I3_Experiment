@@ -31,19 +31,6 @@ void die(char *s) {
 }
 
 int main(int argc, char** argv) {
-	int s = socket(PF_INET, SOCK_STREAM, 0);
-	if (s == -1) {
-		die("socket");
-	}
-
-	struct sockaddr_in addr;
-	addr.sin_family = AF_INET; // declare the protocol of the following address (IPv4)
-	// addr.sin_addr.s_addr = inet_addr("192.169.1.100");
-	if (inet_aton(argv[1], &addr.sin_addr) == 0) die("inet_aton"); // set target ip address
-	addr.sin_port = htons(atoi(argv[2])); // set target port
-	int ret = connect(s, (struct sockaddr *)&addr, sizeof(addr)); // connect
-	if (ret == -1) die("connect");
-
     // SDL initialization
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
         fprintf(stderr, "Could not initialize SDL - %s\n", SDL_GetError());
@@ -76,6 +63,19 @@ int main(int argc, char** argv) {
 
     int frame_size = WIDTH * HEIGHT * 3 / 2; // YUV420P
     uint8_t *frame_data = (uint8_t *)malloc(frame_size);
+
+	int s = socket(PF_INET, SOCK_STREAM, 0);
+	if (s == -1) {
+		die("socket");
+	}
+
+	struct sockaddr_in addr;
+	addr.sin_family = AF_INET; // declare the protocol of the following address (IPv4)
+	// addr.sin_addr.s_addr = inet_addr("192.169.1.100");
+	if (inet_aton(argv[1], &addr.sin_addr) == 0) die("inet_aton"); // set target ip address
+	addr.sin_port = htons(atoi(argv[2])); // set target port
+	int ret = connect(s, (struct sockaddr *)&addr, sizeof(addr)); // connect
+	if (ret == -1) die("connect");
 
     while (1) {
         ssize_t total_received = 0;
